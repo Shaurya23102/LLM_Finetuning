@@ -6,7 +6,7 @@ In this repo i practice llm finetuning and update my daily learnings
 
 **knowlwdge distilation** - It is a fine tuning technique where a smaller model(student) learns probability distribution from larger model(teacher).
 
-First raw output from teacher eg - [0.99,0.01] are smoothned to [0.70,0.30] for better learning, This extra knowledge helps Class similarity,Teacher’s confidence,Inter-class relationships also called dark knowledge 
+First raw output from teacher eg - [0.99,0.01] are smoothned to [0.70,0.30] for better learning, This extra knowledge helps Class similarity,Teacher’s confidence,Inter-class relationships also called dark knowledge eg = “Cat” is more similar to “Tiger” than “Car”
 
 To make teacher prediction ~ student prediction soft loss and hard loss is used - 
 
