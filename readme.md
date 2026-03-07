@@ -21,7 +21,11 @@ loss = loss = alpha * loss_soft + (1 - alpha) * loss_hard
 It is of 2 types: QAT and PQT.
 
 **QAT** – The model is trained with quantization in mind — it learns to handle quantization during training itself.  
-(The model is trained on int8 weights)  
+(The model is trained on int8 weights).If `model.qconfig = torch.quantization.get_default_qat_qconfig('fbgemm')` is used during training, we don’t actually convert tensors to int8 (because gradients need float precision). Instead, PyTorch inserts special modules called **FakeQuantize** that simulate quantization effects.
+
+Forward pass = int8 (simulated)  
+Backward pass = float32
+
 Accuracy drop: 1–2%
 
 **PQT** – The model has already been trained, and now we are quantizing it.  
@@ -42,7 +46,3 @@ Activation + Weight Quantization.
 No calibration required.  
 Weights are pre-quantized (saved as INT8), but activations are quantized temporarily during inference time (on-the-fly), not permanently.
 
-If `model.qconfig = torch.quantization.get_default_qat_qconfig('fbgemm')` is used during training, we don’t actually convert tensors to int8 (because gradients need float precision). Instead, PyTorch inserts special modules called **FakeQuantize** that simulate quantization effects.
-
-Forward pass = int8 (simulated)  
-Backward pass = float32
