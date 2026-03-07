@@ -14,18 +14,35 @@ hard loss = loss_hard = ce_loss(s_logits, y)
 
 loss = loss = alpha * loss_soft + (1 - alpha) * loss_hard
 
-## Quantization 
+### Quantization
 
-**Quantization** - It is a fine tuning tecnique where weights of a model are converted from float32 to int8/int4 which reduces the model size and latency while comprimising a little in accuracy 
+**Quantization** – It is a fine-tuning technique where weights of a model are converted from float32 to int8/int4, which reduces the model size and latency while compromising a little in accuracy.
 
-It is of 2 types QAT and PQT
+It is of 2 types: QAT and PQT.
 
-**QAT** - The model is trained with quantization in mind — it learns to handle quantization during training itself.(the model is trained on int 8 weights) acc drop of 1-2%
-**PQT** - The model has already been trained, and now we are quantizing it.(the model is trained on float32 weights but for inference it we convert it to int8) acc drop of 1-5%
-Type Quantized Parameters Calibration
-Static PTQ Weights ✅+ Activations 
-Dynamic PTQ Weights ✅only 
-Normal or Partial PTQ = Weight only Quant
-Static PTQ = Calibration(training of few data to get range of weights) = Activation + Weight Quant
-Dynamic PTQ = No Calibration = Weights are pre-quantized (saved as INT8), but activations are quantized temporarily during inference time (on-the-fly), not permanently —no calibration 
-> required." and model.qconfig = torch.quantization.get_default_qat_qconfig('fbgemm') is used during training, we don’t actually convert tensors to int8 (because gradients need float precision).Instead, PyTorch inserts special modules (FakeQuantize) that simulate quantization effects forward pass = int8 and backwardpass = float32
+**QAT** – The model is trained with quantization in mind — it learns to handle quantization during training itself.  
+(The model is trained on int8 weights)  
+Accuracy drop: 1–2%
+
+**PQT** – The model has already been trained, and now we are quantizing it.  
+(The model is trained on float32 weights but for inference we convert it to int8)  
+Accuracy drop: 1–5%
+
+Type | Quantized Parameters | Calibration
+--- | --- | ---
+Static PTQ | Weights + Activations | Required
+Dynamic PTQ | Weights only | Not required
+Normal / Partial PTQ | Weight-only quantization | Not required
+
+**Static PTQ**  
+Calibration (training on a few data samples to get the range of weights) is required.  
+Activation + Weight Quantization.
+
+**Dynamic PTQ**  
+No calibration required.  
+Weights are pre-quantized (saved as INT8), but activations are quantized temporarily during inference time (on-the-fly), not permanently.
+
+If `model.qconfig = torch.quantization.get_default_qat_qconfig('fbgemm')` is used during training, we don’t actually convert tensors to int8 (because gradients need float precision). Instead, PyTorch inserts special modules called **FakeQuantize** that simulate quantization effects.
+
+Forward pass = int8 (simulated)  
+Backward pass = float32
