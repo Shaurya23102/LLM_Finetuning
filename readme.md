@@ -22,6 +22,7 @@ It is of 2 types: QAT and PQT.
 
 **QAT** – The model is trained with quantization in mind — it learns to handle quantization during training itself.  
 (The model is trained on int8 weights).
+
 If `model.qconfig = torch.quantization.get_default_qat_qconfig('fbgemm')` is used during training, we don’t actually convert tensors to int8 (because gradients need float precision). Instead, PyTorch inserts special modules called **FakeQuantize** that simulate quantization effects.
 
 Forward pass = int8 (simulated)  
