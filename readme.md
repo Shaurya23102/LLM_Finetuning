@@ -48,3 +48,6 @@ Activation + Weight Quantization.
 No calibration required.  
 Weights are pre-quantized (saved as INT8), but activations are quantized temporarily during inference time (on-the-fly), not permanently.
 
+***GPTQ***
+
+***AWQ***
