@@ -51,3 +51,5 @@ Weights are pre-quantized (saved as INT8), but activations are quantized tempora
 ***GPTQ***
 
 ***AWQ***
+AWQ is a Post-Training Quantization (PTQ) method which instead of treating all weights equally it identifies which weights matter most for real model outputs
+Importance of a weight is determined using: importance∝∣W×X∣
