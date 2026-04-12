@@ -51,6 +51,14 @@ Weights are pre-quantized (saved as INT8), but activations are quantized tempora
 ***GPTQ***
 
 ***AWQ***
+
 AWQ is a Post-Training Quantization (PTQ) method which instead of treating all weights equally it identifies which weights matter most for real model outputs
 Importance of a weight is determined using: importance∝∣W×X∣ 
 basically smaller activation value means more pruning and vice-versa to ensure large round jumping doesnt lead to high error 
+
+**QUESTION** - How much data is enough for callibration?
+Usually there is no rule of thumb but it typically ranges from 0.1% to 1% and as we increase the model size more calib data should be used.
+**QUESTION** - But what if our dataset is very diverse and training data and promt differ a lot?
+Static PTQ is just estimating average activation magnitude, not learning weights. To ensure that there must not be a big drop in acc we must focus on Representativeness > quantity
+Although it is robust to mild shift but case of serious mismatch they will be hallucinated responce because the imp weights where less quantized and less imp weights where more quantized which have become imp now.
+
