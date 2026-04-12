@@ -49,10 +49,10 @@ No calibration required.
 Weights are pre-quantized (saved as INT8), but activations are quantized temporarily during inference time (on-the-fly), not permanently.
 ## GPTQ
 
-GPTQ (Generalized Post-Training Quantization) quantizes weights by minimizing the output error of each layer, using second-order (Hessian-based) information computed from calibration data.
-It minimizes error using ||Wx - Wx^||^2  remains low such that Y = Wx = w^x.
-it corrects future weights based on past errors
-It is more sensitive to bad calib data as entire weight matrix is optimized incorrectly and error propgated to multiple channels,layers.
+GPTQ (Generalized Post-Training Quantization) quantizes weights by minimizing the output error of each layer, using second-order (Hessian-based) information computed from calibration data.<br>
+It minimizes error using ||Wx - Wx^||^2  remains low such that Y = Wx = w^x. <br>
+it corrects future weights based on past errors <br>
+It is more sensitive to bad calib data as entire weight matrix is optimized incorrectly and error propgated to multiple channels,layers. <br>
 
 ## AWQ
 
@@ -67,6 +67,6 @@ Usually there is no rule of thumb but it typically ranges from 0.1% to 1% and as
 
 **QUESTION** - But what if our dataset is very diverse and training data and prompt differ a lot?
 
-Static PTQ is just estimating average activation magnitude, not learning weights. To ensure that there must not be a big drop in acc we must focus on Representativeness > quantity.
-Although it is robust to mild shift but case of serious mismatch they will be hallucinated responce because the imp weights where less quantized and less imp weights where more quantized which have become imp now.
-fix this readme content such that heading and content are on diff line and dont add or remove any content just fix the spacing and lindentatiom 
+Static PTQ is just estimating average activation magnitude, not learning weights. To ensure that there must not be a big drop in acc we must focus on Representativeness > quantity. <br>
+Although it is robust to mild shift but case of serious mismatch they will be hallucinated responce because the imp weights where less quantized and less imp weights where more quantized which have become imp now. <br>
+fix this readme content such that heading and content are on diff line and dont add or remove any content just fix the spacing and lindentatiom <br>
