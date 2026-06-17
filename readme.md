@@ -65,6 +65,12 @@ It is less sensitive to bad calib data as error is localized and nly affects mis
 
 Usually there is no rule of thumb but it typically ranges from 0.1% to 1% and as we increase the model size more calib data should be used.
 
+**QUESTION** - But what if our dataset is very diverse and training data and prompt differ a lot?
+
+Static PTQ is just estimating average activation magnitude, not learning weights. To ensure that there must not be a big drop in acc we must focus on Representativeness > quantity. <br>
+Although it is robust to mild shift but case of serious mismatch they will be hallucinated responce because the imp weights where less quantized and less imp weights where more quantized which have become imp now. <br>
+fix this readme content such that heading and content are on diff line and dont add or remove any content just fix the spacing and lindentatiom <br>
+
 # LoRA 
 
 For a **5 × 5** weight matrix `W`:
@@ -115,8 +121,4 @@ W ≈ B × A
 ```
 Parameters = 20 
 
-**QUESTION** - But what if our dataset is very diverse and training data and prompt differ a lot?
 
-Static PTQ is just estimating average activation magnitude, not learning weights. To ensure that there must not be a big drop in acc we must focus on Representativeness > quantity. <br>
-Although it is robust to mild shift but case of serious mismatch they will be hallucinated responce because the imp weights where less quantized and less imp weights where more quantized which have become imp now. <br>
-fix this readme content such that heading and content are on diff line and dont add or remove any content just fix the spacing and lindentatiom <br>
