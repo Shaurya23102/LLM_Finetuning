@@ -65,6 +65,56 @@ It is less sensitive to bad calib data as error is localized and nly affects mis
 
 Usually there is no rule of thumb but it typically ranges from 0.1% to 1% and as we increase the model size more calib data should be used.
 
+# LoRA 
+
+For a **5 × 5** weight matrix `W`:
+
+```text
+W =
+[
+ [ 1,  2,  3,  4,  5 ]
+ [ 6,  7,  8,  9, 10 ]
+ [11, 12, 13, 14, 15 ]
+ [16, 17, 18, 19, 20 ]
+ [21, 22, 23, 24, 25 ]
+]
+```
+Parameters = 25 
+
+With LoRA rank **r = 2**, it is decomposed into two smaller matrices:
+
+```text
+B =
+[
+ [1, 2]
+ [3, 4]
+ [5, 6]
+ [7, 8]
+ [9,10]
+]
+```
+
+```text
+A =
+[
+ [1, 2, 3, 4, 5]
+ [6, 7, 8, 9,10]
+]
+```
+
+### Dimensions
+
+- `W`: `5 × 5`
+- `B`: `5 × 2`
+- `A`: `2 × 5`
+
+such that
+
+```text
+W ≈ B × A
+```
+Parameters = 20 
+
 **QUESTION** - But what if our dataset is very diverse and training data and prompt differ a lot?
 
 Static PTQ is just estimating average activation magnitude, not learning weights. To ensure that there must not be a big drop in acc we must focus on Representativeness > quantity. <br>
