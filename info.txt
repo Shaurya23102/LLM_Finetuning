@@ -1,0 +1,161 @@
+# When to Use Different PEFT Techniques
+
+| Technique         | Use When                                                                           | Typical Scenario                                  |
+| ----------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------- |
+| **LoRA**          | You have enough GPU memory and want the best balance of performance and efficiency | Fine-tuning Llama, Mistral, Gemma, Qwen           |
+| **QLoRA**         | GPU memory is limited                                                              | Fine-tuning 7B–70B models on consumer GPUs        |
+| **Adapters**      | One base model must serve many tasks                                               | Translation, sentiment analysis, multiple domains |
+| **Prompt Tuning** | Dataset is small and task is simple                                                | Classification, intent detection                  |
+| **Prefix Tuning** | Need parameter efficiency without modifying model weights                          | Generation tasks, summarization                   |
+| **P-Tuning v2**   | Want better performance than Prompt Tuning                                         | NLU and NLG tasks                                 |
+| **IA³**           | Need extremely few trainable parameters                                            | Large-scale deployment with many tasks            |
+| **BitFit**        | Need the smallest possible number of trainable parameters                          | Quick adaptation with very little data            |
+| **AdaLoRA**       | Model layers have varying importance                                               | Resource-constrained fine-tuning                  |
+| **VeRA**          | Need even fewer parameters than LoRA                                               | Multi-task learning                               |
+| **LoHa**          | Need more expressive updates than LoRA                                             | Image generation models (Stable Diffusion)        |
+| **LoKr**          | Want higher capacity while remaining parameter efficient                           | Vision and diffusion models                       |
+| **OFT / BOFT**    | Want to preserve original knowledge as much as possible                            | Continual learning                                |
+| **FourierFT**     | Need compact updates in frequency space                                            | Research applications                             |
+
+---
+
+# Practical Guidelines
+
+## 1. Have Plenty of GPU Memory?
+
+### Use **LoRA**
+
+**Example**
+
+* Fine-tuning a 7B Llama model on a 24 GB RTX 4090.
+
+```text
+Enough memory + high accuracy
+            ↓
+          LoRA
+```
+
+---
+
+## 2. GPU Memory Is Limited?
+
+### Use **QLoRA**
+
+**Example**
+
+* Fine-tuning Llama-3 8B on a 12–16 GB GPU.
+
+```text
+Limited VRAM
+      ↓
+    QLoRA
+```
+
+---
+
+## 3. One Model, Many Tasks?
+
+### Use **Adapters**
+
+Instead of storing separate copies of the whole model:
+
+```text
+Base Model
+    │
+ ├── Adapter for Medical QA
+ ├── Adapter for Finance QA
+ ├── Adapter for Translation
+ └── Adapter for Coding
+```
+
+Good when switching between tasks frequently.
+
+---
+
+## 4. Very Small Dataset?
+
+### Use **Prompt Tuning** or **BitFit**
+
+**Examples**
+
+* Spam detection
+* Sentiment analysis
+* Intent classification
+
+Only a few parameters are trained.
+
+---
+
+## 5. Need Maximum Parameter Efficiency?
+
+### Use **IA³**
+
+Train only scaling vectors.
+
+Useful when:
+
+* Hundreds of tasks share one base model.
+* Storage requirements are critical.
+
+---
+
+## 6. Want Better Performance Than Prompt Tuning?
+
+### Use **P-Tuning v2**
+
+Suitable for:
+
+* Question answering
+* Summarization
+* Text generation
+
+---
+
+## 7. Diffusion Models (Stable Diffusion)
+
+### Use **LoHa** or **LoKr**
+
+These often outperform vanilla LoRA in image-generation tasks.
+
+---
+
+# Decision Tree
+
+```text
+Need to fine-tune an LLM?
+│
+├── GPU memory limited?
+│      │
+│      ├── Yes → QLoRA
+│      └── No → LoRA
+│
+├── Many tasks on one model?
+│      │
+│      └── Adapters
+│
+├── Very small dataset?
+│      │
+│      ├── Prompt Tuning
+│      └── BitFit
+│
+├── Need extremely few trainable parameters?
+│      │
+│      └── IA³
+│
+├── Need better prompt-based performance?
+│      │
+│      └── P-Tuning v2
+│
+└── Image generation models?
+       │
+       ├── LoHa
+       └── LoKr
+```
+
+### In industry today:
+
+* **LoRA** → default choice.
+* **QLoRA** → when VRAM is the bottleneck.
+* **Adapters** → multi-task systems.
+* **Prompt Tuning / BitFit** → very lightweight adaptation.
+* **LoHa / LoKr** → diffusion and vision models.
