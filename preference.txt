@@ -1,0 +1,287 @@
+Preference alignment methods teach an LLM **which of two or more outputs is preferred**, rather than simply teaching it the next token.
+
+The main methods you should know are:
+
+| Method         | What it learns    | Main idea                                          | Complexity |
+| -------------- | ----------------- | -------------------------------------------------- | ---------- |
+| **RLHF / PPO** | Reward model      | Generate → score → optimize with RL                | High       |
+| **DPO**        | Preference pairs  | Directly optimize preferred response over rejected | Low        |
+| **IPO**        | Preference pairs  | More conservative/stable DPO-style objective       | Low        |
+| **KTO**        | Binary feedback   | Learn from good/bad feedback without pairs         | Low        |
+| **ORPO**       | Preference + SFT  | Combines SFT and preference optimization           | Low        |
+| **SimPO**      | Preference pairs  | Uses normalized reward without reference model     | Low        |
+| **GRPO**       | Group preferences | Generate multiple answers and compare them         | Medium     |
+| **PPO + PRM**  | Process rewards   | Reward reasoning steps, not only final answer      | High       |
+| **RLAIF**      | AI preferences    | AI generates preference labels instead of humans   | Medium     |
+
+### 1. RLHF + PPO
+
+Classic pipeline:
+
+```text
+SFT model
+   ↓
+Generate responses
+   ↓
+Human preference data
+   ↓
+Reward Model
+   ↓
+PPO
+   ↓
+Aligned model
+```
+
+The reward model tells the LLM:
+
+> "This response is better."
+
+PPO then optimizes the LLM toward higher reward.
+
+**Problem:** complicated and expensive.
+
+---
+
+### 2. DPO — Direct Preference Optimization
+
+Probably the most important one after RLHF.
+
+Dataset:
+
+```text
+Prompt
+ ├── chosen response
+ └── rejected response
+```
+
+DPO directly trains the model to increase:
+
+[
+P(chosen|prompt)
+]
+
+and decrease:
+
+[
+P(rejected|prompt)
+]
+
+without separately training a reward model and running PPO.
+
+**Pros:** simple, stable, cheap.
+
+---
+
+### 3. IPO
+
+**Identity Preference Optimization.**
+
+Similar philosophy to DPO but modifies the objective to avoid some of DPO's overconfidence/overfitting behavior.
+
+Useful when DPO becomes too aggressive.
+
+---
+
+### 4. KTO
+
+**Kahneman-Tversky Optimization.**
+
+Important difference:
+
+DPO needs:
+
+```text
+chosen + rejected
+```
+
+KTO can work with:
+
+```text
+response → good/bad
+```
+
+So you don't necessarily need preference pairs.
+
+Example:
+
+```text
+Question
+Response A → 👍
+Response B → 👎
+```
+
+This is useful when you have large amounts of implicit user feedback.
+
+---
+
+### 5. ORPO
+
+**Odds Ratio Preference Optimization.**
+
+Combines:
+
+```text
+SFT + preference optimization
+```
+
+in a single training objective.
+
+Instead of:
+
+```text
+SFT
+ ↓
+DPO
+```
+
+you can essentially train both together.
+
+---
+
+### 6. SimPO
+
+**Simple Preference Optimization.**
+
+Similar goal to DPO but removes the need for a separate reference model.
+
+That makes it:
+
+```text
+DPO
+ ├── policy model
+ └── reference model
+
+SimPO
+ └── policy model
+```
+
+So it can reduce memory usage.
+
+---
+
+### 7. GRPO
+
+**Group Relative Policy Optimization.**
+
+Instead of having a separate reward model for every answer, generate a **group of responses**:
+
+```text
+Prompt
+  │
+  ├── Answer 1 → reward 0.9
+  ├── Answer 2 → reward 0.3
+  ├── Answer 3 → reward 0.8
+  └── Answer 4 → reward 0.2
+```
+
+Then optimize based on their relative rewards.
+
+GRPO became particularly important for **reasoning models**, where verifiable rewards such as math/code correctness can be used.
+
+---
+
+### 8. PRM — Process Reward Model
+
+This is slightly different from the others.
+
+A normal reward model might evaluate:
+
+```text
+Question
+   ↓
+Entire solution
+   ↓
+Reward = 0.8
+```
+
+A **Process Reward Model** evaluates intermediate reasoning steps:
+
+```text
+Step 1 → ✓
+Step 2 → ✓
+Step 3 → ✗
+Step 4 → ✗
+```
+
+So:
+
+**ORM — Outcome Reward Model**
+
+```text
+Final answer → reward
+```
+
+**PRM — Process Reward Model**
+
+```text
+Reasoning step 1 → reward
+Reasoning step 2 → reward
+Reasoning step 3 → reward
+...
+```
+
+PRMs are particularly useful for mathematical/reasoning tasks.
+
+---
+
+### 9. RLAIF
+
+**Reinforcement Learning from AI Feedback.**
+
+Instead of:
+
+```text
+Human → preference labels
+```
+
+use:
+
+```text
+AI judge → preference labels
+```
+
+For example, another strong LLM evaluates:
+
+```text
+Response A vs Response B
+        ↓
+     AI judge
+        ↓
+       A wins
+```
+
+Then use those preferences for DPO/RLHF-style training.
+
+---
+
+## What to remember for interviews
+
+The hierarchy is easiest to remember as:
+
+```text
+Preference Alignment
+│
+├── RLHF
+│    ├── Reward Model
+│    └── PPO
+│
+├── Direct Preference Optimization
+│    ├── DPO
+│    ├── IPO
+│    ├── KTO
+│    ├── ORPO
+│    └── SimPO
+│
+└── Reasoning Alignment
+     ├── ORM
+     ├── PRM
+     └── GRPO
+```
+
+The **most important ones to know deeply** are:
+
+**RLHF/PPO → DPO → KTO → GRPO → PRM/ORM**
+
+And the key distinction is:
+
+> **DPO learns from preference pairs, PRM evaluates the reasoning process, ORM evaluates the final outcome, and GRPO uses relative rewards among multiple generated answers.**
